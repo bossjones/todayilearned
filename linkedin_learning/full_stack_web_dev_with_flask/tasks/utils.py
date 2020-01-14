@@ -66,18 +66,6 @@ def is_venv():
         hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
     )
 
-
-def get_version():
-    """Get current version of Ultron8
-
-    Returns:
-        Str -- Returns current version of application
-    """
-    from ultron8 import __version__
-
-    return __version__
-
-
 def get_compose_env(c, loc="docker", name=None):
     """
     The variables are looked up in this priority: invoke.yaml dev.env variables, environment variables,
@@ -86,7 +74,6 @@ def get_compose_env(c, loc="docker", name=None):
     Vault variables
     """
     env = copy.copy(c[loc]["env"])
-    env["VERSION"] = get_version()
     env["NAME"] = c["name"]
 
     # environment variables have priority over what's inside invoke.yaml
