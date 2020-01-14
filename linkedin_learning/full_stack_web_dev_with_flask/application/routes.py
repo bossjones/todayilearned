@@ -22,9 +22,10 @@ def courses(term="2019"):
 def register():
     return render_template("register.html", register=True)
 
-@app.route("/enrollment")
+# SOURCE: https://stackoverflow.com/questions/10434599/get-the-data-received-in-a-flask-request
+@app.route("/enrollment", methods=["GET","POST"])
 def enrollment():
-    id = request.args.get('courseID')
-    title = request.args.get('title')
-    term = request.args.get('term')
+    id = request.form.get('courseID')
+    title = request.form['title']
+    term = request.form.get('term')
     return render_template("enrollment.html", enrollment=True, data={"id": id, "title": title, "term": term})
