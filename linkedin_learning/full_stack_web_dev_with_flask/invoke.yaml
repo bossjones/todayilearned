@@ -14,10 +14,10 @@ docker:
   env:
     DEBUG: 'True'
     TESTING: 'True'
-    BETTER_EXCEPTIONS: 1
+    BETTER_EXCEPTIONS: '1'
 
 local:
   env:
     DEBUG: 'True'
     TESTING: 'True'
-    BETTER_EXCEPTIONS: 1
+    BETTER_EXCEPTIONS: '1'

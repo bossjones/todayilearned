@@ -31,7 +31,7 @@ def pylint(ctx, loc="local"):
         ctx.config["run"]["env"][k] = v
 
     ctx.run(
-        "pylint --disable=all --enable=F,E --rcfile ./lint-configs-python/python/pylintrc {FILES_TO_CHECK}".format(FILES_TO_CHECK=FILES_TO_CHECK)
+        "pylint --disable=all --enable=F,E --rcfile ./lint-configs-python/python/pylintrc main.py application config.py"
     )
 
 
@@ -50,7 +50,7 @@ def mypy(ctx, loc="local"):
     for k, v in env.items():
         ctx.config["run"]["env"][k] = v
 
-    ctx.run("mypy --config-file ./lint-configs-python/python/mypy.ini {FILES_TO_CHECK}".format(FILES_TO_CHECK=FILES_TO_CHECK))
+    ctx.run("mypy --config-file ./lint-configs-python/python/mypy.ini main.py application config.py")
 
 
 @task(incrementable=["verbose"])
@@ -72,12 +72,12 @@ def black(ctx, loc="local", check=True, debug=False, verbose=0):
     _cmd = ""
 
     if check:
-        _cmd = "black --check --exclude=venv* --verbose {FILES_TO_CHECK}".format(FILES_TO_CHECK=FILES_TO_CHECK)
+        _cmd = "black --check --exclude=venv* --verbose main.py application config.py"
     else:
         if verbose >= 1:
             msg = "[black] check mode disabled"
             click.secho(msg, fg="green")
-        _cmd = r"black --exclude='{_black_excludes}' --verbose {FILES_TO_CHECK}".format(_black_excludes=_black_excludes, FILES_TO_CHECK=FILES_TO_CHECK)
+        _cmd = r"black --exclude='{}' --verbose main.py application config.py".format(_black_excludes)
 
     ctx.run(_cmd)
 
@@ -99,8 +99,8 @@ def isort(ctx, loc="local", check=True, debug=False):
     _cmd = ""
 
     if check:
-        _cmd = "isort --recursive --check-only --diff --verbose {FILES_TO_CHECK}".format(FILES_TO_CHECK=FILES_TO_CHECK)
+        _cmd = "isort --recursive --check-only --diff --verbose main.py application config.py"
     else:
-        _cmd = "isort --recursive --diff --verbose {FILES_TO_CHECK}".format(FILES_TO_CHECK=FILES_TO_CHECK)
+        _cmd = "isort --recursive --diff --verbose main.py application config.py"
 
     ctx.run(_cmd)

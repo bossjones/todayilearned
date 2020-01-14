@@ -15,3 +15,4 @@ autoflake
 vulture
 hunter
 pystuck
+better_exceptions
