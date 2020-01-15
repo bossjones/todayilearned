@@ -2,6 +2,7 @@ flask
 python-dotenv
 invoke
 flask-wtf
+flask-security
 flask-mongoengine
 
 isort
