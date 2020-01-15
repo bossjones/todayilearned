@@ -232,14 +232,23 @@ def api(idx=None):
 
     return Response(json.dumps(jdata), mimetype="application/json")
 
+
 @app.route("/user")
 def user():
     users = User.objects.all()
     return render_template("user.html", users=users)
 
+
 def _fixtures():
     for i in usersData:
-        User(user_id=i["id"], first_name=i["first_name"], last_name=i["last_name"], email=i["email"], password=i["password"]).save()
+        User(
+            user_id=i["id"],
+            first_name=i["first_name"],
+            last_name=i["last_name"],
+            email=i["email"],
+            password=i["password"],
+        ).save()
+
 
 @app.route("/fixtures")
 def fixtures():
