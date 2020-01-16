@@ -217,7 +217,7 @@ def login():
 
         if user and user.get_password(password):
             flash(f"{user.first_name}, you are sucessfully logged in!", "success")
-            session["user_ud"] = user.user_id
+            session["user_id"] = user.user_id
             session["username"] = user.first_name
             return redirect("/index")
         else:
