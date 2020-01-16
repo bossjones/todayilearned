@@ -6,7 +6,7 @@ from application.models import User
 
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
-    password = StringField(
+    password = PasswordField(
         "Password", validators=[DataRequired(), Length(min=6, max=15)]
     )
     remember_me = BooleanField("Remember Me")
@@ -15,10 +15,10 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired()])
-    password = StringField(
+    password = PasswordField(
         "Password", validators=[DataRequired(), Length(min=6, max=15)]
     )
-    password_confirm = StringField(
+    password_confirm = PasswordField(
         "Confirm Password",
         validators=[DataRequired(), Length(min=6, max=15), EqualTo("password")],
     )
