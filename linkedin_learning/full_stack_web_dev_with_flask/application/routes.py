@@ -256,21 +256,19 @@ def enrollment():
     if courseID:
         # then we can process the enrollment
         if Enrollment.objects(user_id=user_id, courseID=courseID):
-            flash(f"Oops! You are already registered in this course {courseTitle}!", "danger")
+            flash(
+                f"Oops! You are already registered in this course {courseTitle}!",
+                "danger",
+            )
             return redirect(url_for("courses"))
         else:
-            Enrollment(user_id=user_id,courseID=courseID)
+            Enrollment(user_id=user_id, courseID=courseID)
             flash(f"Youenrolled in {courseTitle}!", "success")
-
 
     classes = None
 
     term = request.form.get("term")
-    return render_template(
-        "enrollment.html",
-        enrollment=True,
-        classes=classes,
-    )
+    return render_template("enrollment.html", enrollment=True, classes=classes,)
 
 
 @app.route("/api/")
