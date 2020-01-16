@@ -146,7 +146,7 @@ usersData = [
     },
 ]
 
-courseData = [
+_courseData = [
     {
         "courseID": "1111",
         "title": "PHP 111",
@@ -212,10 +212,11 @@ def login():
 
 @app.route("/courses")
 @app.route("/courses/<term>")
-def courses(term="Spring 2019"):
-    return render_template(
-        "courses.html", courseData=courseData, courses=True, term=term
-    )
+def courses(term=None):
+    if term is None:
+        term = "Spring 2019"
+    classes = Course.objects.order_by("-courseID")
+    return render_template("courses.html", courseData=classes, courses=True, term=term)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -258,6 +259,7 @@ def enrollment():
 @app.route("/api/")
 @app.route("/api/<idx>")
 def api(idx=None):
+    courseData = Course.objects.order_by("courseID")
     if idx == None:
         jdata = courseData
     else:
@@ -283,10 +285,20 @@ def _fixtures():
         ).save()
 
 
+def _fixtures_courses():
+    for i in _courseData:
+        Course(
+            courseID=i["courseID"],
+            title=i["title"],
+            description=i["description"],
+            credits=i["credits"],
+            term=i["term"],
+        ).save()
+
+
 @app.route("/fixtures")
 def fixtures():
     _fixtures()
-    #  User(user_id=1, first_name="Christian", last_name="Hur", email="christian@uta.com", password="abc1234").save()
-    #  User(user_id=2, first_name="Mary", last_name="Jane", email="mary.jane@uta.com", password="password123").save()
+    # _fixtures_courses()
     users = User.objects.all()
     return Response(json.dumps(users), mimetype="application/json")
