@@ -1,5 +1,14 @@
 from application import app, db
-from flask import render_template, request, json, Response, redirect, flash, url_for
+from flask import (
+    render_template,
+    request,
+    json,
+    Response,
+    redirect,
+    flash,
+    url_for,
+    session,
+)
 from application.models import User, Course, Enrollment
 from application.forms import LoginForm, RegisterForm
 
@@ -194,6 +203,10 @@ def index():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    # if already logged in, redirect to homepage
+    if session.get("username"):
+        return redirect(url_for("index"))
+
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -204,10 +217,19 @@ def login():
 
         if user and user.get_password(password):
             flash(f"{user.first_name}, you are sucessfully logged in!", "success")
+            session["user_ud"] = user.user_id
+            session["username"] = user.first_name
             return redirect("/index")
         else:
             flash("Sorry, something went wrong.", "danger")
     return render_template("login.html", title="Login", form=form, login=True)
+
+
+@app.route("/logout")
+def logout():
+    session["user_id"] = False
+    session.pop("username", None)
+    return redirect("/index")
 
 
 @app.route("/courses")
@@ -221,6 +243,8 @@ def courses(term=None):
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if session.get("username"):
+        return redirect(url_for("index"))
     form = RegisterForm()
     if form.validate_on_submit():
         # count the amount of data in db ( use this to auto create id for mongo )
@@ -246,12 +270,18 @@ def register():
 # SOURCE: https://stackoverflow.com/questions/10434599/get-the-data-received-in-a-flask-request
 @app.route("/enrollment", methods=["GET", "POST"])
 def enrollment():
+    # if already logged in, redirect to homepage
+    if not session.get("username"):
+        return redirect(url_for("login"))
+
+    # only see enrollment if you are logged in
+
     # form.get = less strict, if you have courseID return it, otherwise None
     courseID = request.form.get("courseID")
     # request.form["<VALUE>"] is strict, if you don't have it, app will throw stack trace
     # title = request.form["title"]
     courseTitle = request.form.get("title")
-    user_id = 2
+    user_id = session.get("user_id")
 
     # if you're coming from enrollment page, we don't need ot add anything
     if courseID:
@@ -264,7 +294,7 @@ def enrollment():
             return redirect(url_for("courses"))
         else:
             Enrollment(user_id=user_id, courseID=courseID).save()
-            flash(f"Youenrolled in {courseTitle}!", "success")
+            flash(f"You enrolled in {courseTitle}!", "success")
 
     classes = list(
         User.objects.aggregate(
@@ -324,13 +354,14 @@ def user():
 
 def _fixtures():
     for i in usersData:
-        User(
+        user = User(
             user_id=i["id"],
+            email=i["email"],
             first_name=i["first_name"],
             last_name=i["last_name"],
-            email=i["email"],
-            password=i["password"],
-        ).save()
+        )
+        user.set_password(i["password"])
+        user.save()
 
 
 def _fixtures_courses():
@@ -347,6 +378,6 @@ def _fixtures_courses():
 @app.route("/fixtures")
 def fixtures():
     _fixtures()
-    # _fixtures_courses()
+    _fixtures_courses()
     users = User.objects.all()
     return Response(json.dumps(users), mimetype="application/json")
