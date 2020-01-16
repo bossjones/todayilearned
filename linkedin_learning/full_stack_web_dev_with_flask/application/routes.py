@@ -251,7 +251,7 @@ def enrollment():
     # request.form["<VALUE>"] is strict, if you don't have it, app will throw stack trace
     # title = request.form["title"]
     courseTitle = request.form.get("title")
-    user_id = 1
+    user_id = 2
 
     # if you're coming from enrollment page, we don't need ot add anything
     if courseID:
@@ -263,7 +263,7 @@ def enrollment():
             )
             return redirect(url_for("courses"))
         else:
-            Enrollment(user_id=user_id, courseID=courseID)
+            Enrollment(user_id=user_id, courseID=courseID).save()
             flash(f"Youenrolled in {courseTitle}!", "success")
 
     classes = list(
@@ -299,7 +299,9 @@ def enrollment():
         )
     )
 
-    return render_template("enrollment.html", enrollment=True, classes=classes)
+    return render_template(
+        "enrollment.html", enrollment=True, title="Enrollment", classes=classes
+    )
 
 
 @app.route("/api/")
