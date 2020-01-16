@@ -246,13 +246,30 @@ def register():
 # SOURCE: https://stackoverflow.com/questions/10434599/get-the-data-received-in-a-flask-request
 @app.route("/enrollment", methods=["GET", "POST"])
 def enrollment():
-    id = request.form.get("courseID")
-    title = request.form["title"]
+    # form.get = less strict, if you have courseID return it, otherwise None
+    courseID = request.form.get("courseID")
+    # request.form["<VALUE>"] is strict, if you don't have it, app will throw stack trace
+    # title = request.form["title"]
+    courseTitle = request.form.get("title")
+
+    # if you're coming from enrollment page, we don't need ot add anything
+    if courseID:
+        # then we can process the enrollment
+        if Enrollment.objects(user_id=user_id, courseID=courseID):
+            flash(f"Oops! You are already registered in this course {courseTitle}!", "danger")
+            return redirect(url_for("courses"))
+        else:
+            Enrollment(user_id=user_id,courseID=courseID)
+            flash(f"Youenrolled in {courseTitle}!", "success")
+
+
+    classes = None
+
     term = request.form.get("term")
     return render_template(
         "enrollment.html",
         enrollment=True,
-        data={"id": id, "title": title, "term": term},
+        classes=classes,
     )
 
 
