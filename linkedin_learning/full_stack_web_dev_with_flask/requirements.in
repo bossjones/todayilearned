@@ -5,6 +5,7 @@ flask-wtf
 flask-security
 flask-mongoengine
 # flask-login # implement this later
+flask-debugtoolbar
 
 isort
 pdbpp
