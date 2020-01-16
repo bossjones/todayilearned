@@ -251,6 +251,7 @@ def enrollment():
     # request.form["<VALUE>"] is strict, if you don't have it, app will throw stack trace
     # title = request.form["title"]
     courseTitle = request.form.get("title")
+    user_id = 1
 
     # if you're coming from enrollment page, we don't need ot add anything
     if courseID:
@@ -265,10 +266,44 @@ def enrollment():
             Enrollment(user_id=user_id, courseID=courseID)
             flash(f"Youenrolled in {courseTitle}!", "success")
 
-    classes = None
+    classes = list( User.objects.aggregate(*[
+            {
+                '$lookup': {
+                    'from': 'enrollment',
+                    'localField': 'user_id',
+                    'foreignField': 'user_id',
+                    'as': 'r1'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$r1',
+                    'includeArrayIndex': 'r1_id',
+                    'preserveNullAndEmptyArrays': False
+                }
+            }, {
+                '$lookup': {
+                    'from': 'course',
+                    'localField': 'r1.courseID',
+                    'foreignField': 'courseID',
+                    'as': 'r2'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$r2',
+                    'preserveNullAndEmptyArrays': False
+                }
+            }, {
+                '$match': {
+                    'user_id': user_id
+                }
+            }, {
+                '$sort': {
+                    'courseID': 1
+                }
+            }
+        ]))
 
-    term = request.form.get("term")
-    return render_template("enrollment.html", enrollment=True, classes=classes,)
+    return render_template("enrollment.html", enrollment=True, classes=classes)
 
 
 @app.route("/api/")
