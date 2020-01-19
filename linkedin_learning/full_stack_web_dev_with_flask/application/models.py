@@ -2,6 +2,8 @@ import flask
 from application import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# pylint: disable=no-member
+
 
 class User(db.Document):
     user_id = db.IntField(unique=True)
