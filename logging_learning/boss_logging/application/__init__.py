@@ -13,6 +13,16 @@ api = Api()
 app = Flask(__name__)
 app.config.from_object(Config)
 
+dictConfig(app.config.get("LOGGING"))
+logger.info(
+    "Logging configured",
+    extra=dict(
+        root_logger_level=logging.getLogger().getEffectiveLevel(),
+        logger_level=logger.getEffectiveLevel(),
+    ),
+)
+
+
 db = MongoEngine()
 db.init_app(app)
 api.init_app(app)
@@ -22,12 +32,3 @@ toolbar = DebugToolbarExtension(app)
 # We don't want to have circular dependencies so call application after we've called app.
 
 from application import routes
-
-# dictConfig(app.config.LOGGING)
-# logger.info(
-#     "Logging configured",
-#     extra=dict(
-#         root_logger_level=logging.getLogger().getEffectiveLevel(),
-#         logger_level=logger.getEffectiveLevel(),
-#     ),
-# )
