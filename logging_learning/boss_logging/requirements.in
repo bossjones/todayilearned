@@ -21,3 +21,4 @@ vulture
 hunter
 pystuck
 better_exceptions
+python-json-logger
