@@ -41,16 +41,16 @@ class Config(object):
             "flask": {
                 "handlers": ["console_message"],
                 "propagate": False,
-                "level": os.environ.get("LOG_LEVEL", "WARNING"),
+                "level": os.environ.get("LOG_LEVEL", "DEBUG"),
             },
             "werkzeug": {
                 "handlers": ["console_message"],
                 "propagate": False,
-                "level": os.environ.get("LOG_LEVEL", "WARNING"),
+                "level": os.environ.get("LOG_LEVEL", "DEBUG"),
             },
         },
         "root": {
             "handlers": ["console_message"],
-            "level": os.environ.get("LOG_LEVEL", "WARNING"),
+            "level": os.environ.get("LOG_LEVEL", "DEBUG"),
         },
     }
