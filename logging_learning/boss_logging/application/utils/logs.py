@@ -15,7 +15,7 @@ class RequestFormatter(logging.Formatter):
         return super().format(record)
 
 
-def generate_request_id(original_id=''):
+def generate_request_id(original_id=""):
     new_id = uuid.uuid4()
 
     if original_id:
@@ -25,7 +25,7 @@ def generate_request_id(original_id=''):
 
 
 def request_id():
-    if getattr(flask.g, 'request_id', None):
+    if getattr(flask.g, "request_id", None):
         return flask.g.request_id
 
     headers = flask.request.headers
@@ -38,5 +38,5 @@ def request_id():
 
 class RequestIdFilter(logging.Filter):
     def filter(self, record):
-        record.request_id = request_id() if flask.has_request_context() else ''
+        record.request_id = request_id() if flask.has_request_context() else ""
         return True

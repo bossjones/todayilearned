@@ -14,11 +14,13 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 dictConfig(app.config.LOGGING)
-logger.info("Logging configured",
-            extra=dict(
-                root_logger_level=logging.getLogger().getEffectiveLevel(),
-                logger_level=logger.getEffectiveLevel()
-            ))
+logger.info(
+    "Logging configured",
+    extra=dict(
+        root_logger_level=logging.getLogger().getEffectiveLevel(),
+        logger_level=logger.getEffectiveLevel(),
+    ),
+)
 
 db = MongoEngine()
 db.init_app(app)
