@@ -104,7 +104,7 @@ def pip_deps(ctx, loc="local", verbose=0, cleanup=False):
         click.secho(msg, fg=COLOR_SUCCESS)
 
     _cmd = r"""
-pip install pip-tools pipdeptree wheel || true
+pip install pip-tools pipdeptree wheel pre-commit || true
 pip-compile --output-file requirements.txt requirements.in --upgrade
     """
 
