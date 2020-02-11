@@ -23,3 +23,4 @@ pystuck
 better_exceptions
 python-json-logger
 werkzeug==0.16.0
+pydantic[email,typing_extensions]

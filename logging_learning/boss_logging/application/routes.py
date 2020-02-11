@@ -1,3 +1,4 @@
+import logging
 from application import app, db, api
 from flask import (
     render_template,
@@ -10,9 +11,19 @@ from flask import (
     session,
     jsonify,
 )
-from application.models import User, Course, Enrollment
+from application.models import User, Course, Enrollment, LoggerModel, LoggerPatch
 from application.forms import LoginForm, RegisterForm
 from flask_restplus import Resource
+
+LOG_LEVELS = {
+    "critical": logging.CRITICAL,
+    "error": logging.ERROR,
+    "warning": logging.WARNING,
+    "info": logging.INFO,
+    "debug": logging.DEBUG,
+}
+
+logger = logging.getLogger(__name__)
 
 # pylint: disable=no-member
 
@@ -429,3 +440,52 @@ def fixtures():
     _fixtures_courses()
     users = User.objects.all()
     return Response(json.dumps(users), mimetype="application/json")
+
+
+@app.route("/logs")
+@app.route("/logs/<logger_name>")
+def logs(logger_name=None):
+    rootm = generate_tree()
+    if logger_name is None:
+        logger.debug(rootm)
+        return jsonify(rootm)
+    lm = get_lm_from_tree(rootm, logger_name)
+    if lm is None:
+        # raise HTTPException(status_code=404, detail=f"Logger {logger_name} not found")
+        return jsonify(error=404, text=str(f"Logger {logger_name} not found")), 404
+    return jsonify(lm)
+
+def get_lm_from_tree(loggertree: LoggerModel, find_me: str) -> LoggerModel:
+    if find_me == loggertree.name:
+        logger.debug("Found")
+        return loggertree
+    else:
+        for ch in loggertree.children:
+            logger.debug(f"Looking in: {ch.name}")
+            i = get_lm_from_tree(ch, find_me)
+            if i:
+                return i
+
+
+def generate_tree() -> LoggerModel:
+    # adapted from logging_tree package https://github.com/brandon-rhodes/logging_tree
+    rootm = LoggerModel(
+        name="root", level=logging.getLogger().getEffectiveLevel(), children=[]
+    )
+    nodesm = {}
+    items = list(logging.root.manager.loggerDict.items())  # type: ignore
+    items.sort()
+    for name, loggeritem in items:
+        if isinstance(loggeritem, logging.PlaceHolder):
+            nodesm[name] = nodem = LoggerModel(name=name, children=[])
+        else:
+            nodesm[name] = nodem = LoggerModel(
+                name=name, level=loggeritem.getEffectiveLevel(), children=[]
+            )
+        i = name.rfind(".", 0, len(name) - 1)  # same formula used in `logging`
+        if i == -1:
+            parentm = rootm
+        else:
+            parentm = nodesm[name[:i]]
+        parentm.children.append(nodem)
+    return rootm

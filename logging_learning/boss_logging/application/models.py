@@ -1,3 +1,10 @@
+# SOURCE: https://blog.bartab.fr/fastapi-logging-on-the-fly/
+from __future__ import annotations
+
+from typing import List, Optional
+
+from pydantic import BaseModel
+
 import flask
 from application import db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -30,3 +37,16 @@ class Course(db.Document):
 class Enrollment(db.Document):
     user_id = db.IntField()
     courseID = db.StringField(max_length=10)
+
+
+class LoggerPatch(BaseModel):
+    name: str
+    level: str
+
+
+class LoggerModel(BaseModel):
+    name: str
+    level: Optional[int]
+    children: Optional[List["LoggerModel"]] = None
+
+LoggerModel.update_forward_refs()
