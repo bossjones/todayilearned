@@ -448,12 +448,12 @@ def logs(logger_name=None):
     rootm = generate_tree()
     if logger_name is None:
         logger.debug(rootm)
-        return jsonify(rootm)
+        return jsonify(rootm.dict())
     lm = get_lm_from_tree(rootm, logger_name)
     if lm is None:
         # raise HTTPException(status_code=404, detail=f"Logger {logger_name} not found")
         return jsonify(error=404, text=str(f"Logger {logger_name} not found")), 404
-    return jsonify(lm)
+    return jsonify(lm.dict())
 
 def get_lm_from_tree(loggertree: LoggerModel, find_me: str) -> LoggerModel:
     if find_me == loggertree.name:
