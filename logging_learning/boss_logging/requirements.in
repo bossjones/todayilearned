@@ -1,0 +1,26 @@
+flask
+python-dotenv
+invoke
+flask-wtf
+flask-security
+flask-mongoengine
+# flask-login # implement this later
+flask-debugtoolbar
+flask-restplus
+
+isort
+pdbpp
+black
+mccabe
+autopep8
+MonkeyType
+pylint
+restructuredtext_lint
+autoflake
+vulture
+hunter
+pystuck
+better_exceptions
+python-json-logger
+werkzeug==0.16.0
+pydantic[email,typing_extensions]
